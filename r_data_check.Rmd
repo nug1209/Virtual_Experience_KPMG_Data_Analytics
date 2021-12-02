@@ -200,7 +200,239 @@ sum(is.na(as.numeric(as.character(vec))))
 ```
 
 
+NEWCUSTOMERLIST
+
+```{r}
+df_nc <- read_excel(path, sheet = "NewCustomerList", skip = 1)
+head(df_nc)
+
+```
+
+```{r}
+names(df_nc)
+```
+
+```{r}
+# Change columns data types
+to_num <- c("past_3_years_bike_related_purchases", "property_valuation")
+df_nc[to_num] <- sapply(df_nc[to_num], as.numeric)
+df_nc <- mutate(df_nc, DOB = as.Date(DOB, format = "%Y-%m-%d"))
+```
+
+NEWCUSTOMERLIST sheet: check for person duplicates
+
+```{r}
+df_nc$check_dup <- paste(df_ncl$first_name, df_ncl$last_name, df_ncl$DOB)
+head(df_nc)
+```
+```{r}
+stats_cat(df_nc["check_dup"])
+```
+
+NEWCUSTOMERLIST sheet: first_name
+
+```{r}
+stats_cat(df_nc["first_name"])
+```
+
+NEWCUSTOMERLIST sheet: last_name
+```{r}
+stats_cat(df_nc["last_name"])
+```
+
+
+NEWCUSTOMERLIST sheet: gender
+```{r}
+stats_cat(df_nc["gender"])
+```
+```{r}
+unique(df_nc["gender"])
+```
+```{r}
+ggplot(df_nc, aes(x=gender)) + geom_bar()
+```
+```{r}
+
+as.data.frame(table(df_nc["gender"]))
+```
+
+NEWCUSTOMERLIST sheet: past_3_years_bike_related_purchases
+```{r}
+stats_num(df_nc["past_3_years_bike_related_purchases"])
+```
+```{r}
+# Check if there is a non-numeric value in a numeric column
+vec <- pull(df_nc, past_3_years_bike_related_purchases)
+sum((is.na(as.numeric(as.character(vec)))))
+```
+```{r}
+ggplot(df_nc, aes(x=past_3_years_bike_related_purchases)) + geom_histogram()
+```
+
+
+NEWCUSTOMERLIST sheet: DOB
+```{r}
+stats_date(df_nc["DOB"])
+```
+```{r}
+min <- min(df_nc$DOB, na.rm=TRUE)
+max <- max(df_nc$DOB, na.rm = TRUE)
+data.frame(min, max)
+
+```
+```{r}
+ggplot(df_nc, aes(x=DOB)) + geom_histogram()
+```
+
+NEWCUSTOMERLIST sheet: job_title
+```{r}
+stats_cat(df_nc["job_title"])
+```
+```{r}
+unique <- unique(df_nc["job_title"])
+unique <- unique[order(unique["job_title"]),]
+pull(unique, job_title)
+```
+```{r}
+table <- as.data.frame(table(df_nc["job_title"]))
+table <- table[order(-table["Freq"]),]
+table
+```
+
+NEWCUSTOMERLIST sheet: job_industry_category
+```{r}
+stats_cat(df_nc["job_industry_category"])
+```
+```{r}
+unique(df_nc["job_industry_category"])
+```
+```{r}
+ggplot(df_nc, aes(x=job_industry_category)) + geom_bar()
+```
+
+
+NEWCUSTOMERLIST sheet:
+
+```{r}
+stats_cat(df_nc["wealth_segment"])
+
+```
+```{r}
+ggplot(df_nc, aes(x=wealth_segment)) + geom_bar()
+```
+
+
+NEWCUSTOMERLIST sheet: deceased_indicator
+
+```{r}
+stats_cat(df_nc["deceased_indicator"])
+```
 
 
 
+NEWCUSTOMERLIST sheet: owns_car
+```{r}
+stats_cat(df_nc["owns_car"])
+```
+```{r}
+ggplot(df_nc, aes(x=owns_car)) + geom_bar()
+```
+
+
+NEWCUSTOMERLIST sheet:
+```{r}
+stats_num(df_nc["tenure"])
+```
+```{r}
+ggplot(df_nc, aes(x=tenure)) + geom_histogram()
+```
+```{r}
+table <- as.data.frame(table(df_nc["tenure"]))
+table <- table[order(table["Freq"]),]
+table
+```
+
+NEWCUSTOMERLIST sheet: address
+```{r}
+stats_cat(df_nc["address"])
+```
+
+
+NEWCUSTOMERLIST sheet: post_code
+```{r}
+stats_cat(df_nc["postcode"])
+```
+```{r}
+# Check if there is a non-numeric value in a numeric column
+vec <- pull(df_nc, postcode)
+sum((is.na(as.numeric(as.character(vec)))))
+```
+
+
+NEWCUSTOMERLIST sheet: state
+```{r}
+stats_cat(df_nc["state"])
+```
+```{r}
+unique(df_nc["state"])
+```
+```{r}
+ggplot(df_nc, aes(x=state)) + geom_bar()
+```
+
+
+NEWCUSTOMERLIST sheet: country
+```{r}
+stats_cat(df_nc["country"])
+```
+
+
+NEWCUSTOMERLIST sheet: property_valuation
+```{r}
+stats_num(df_nc["property_valuation"])
+```
+```{r}
+# Check if there is a non-numeric value in a numeric column
+vec <- pull(df_nc, property_valuation)
+sum((is.na(as.numeric(as.character(vec)))))
+```
+```{r}
+ggplot(df_nc, aes(x=property_valuation)) + geom_histogram()
+```
+
+
+NEWCUSTOMERLIST sheet: rank
+```{r}
+stats_num(df_nc["Rank"])
+```
+```{r}
+table <- as.data.frame(table(df_nc["Rank"]))
+table <- table[order(-table["Freq"]),]
+table
+```
+```{r}
+ggplot(df_nc, aes(x=Rank)) + geom_histogram()
+```
+```{r}
+vec <- pull(df_nc, Rank)
+sum((is.na(as.numeric(as.character(vec)))))
+```
+
+
+NEWCUSTOMERLIST sheet: Value
+```{r}
+stats_num(df_nc["Value"])
+```
+```{r}
+vec <- pull(df_trans, list_price)
+sum((is.na(as.numeric(as.character(vec)))))
+```
+```{r}
+ggplot(df_nc, aes(x=Rank)) + geom_histogram()
+```
+CUSTOMERDEMOGRAPHIC sheet
+```{r}
+df_cd <- read_excel(path, sheet = "CustomerDemographic", skip = 1)
+head(df_cd)
+```
 

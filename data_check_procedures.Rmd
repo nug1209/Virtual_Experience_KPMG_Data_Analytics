@@ -1,0 +1,144 @@
+---
+title: "KPMB Data Analytics Virtual Experience"
+output: html_notebook
+---
+
+
+Checking parts of data that need cleaning.
+
+
+```{r}
+# Import
+library("readxl")
+library("dplyr")
+library("ggplot2")
+
+# Set path
+path <- "KPMG_VI_New_raw_data_update_final.xlsx"
+
+# Get sheets name
+excel_sheets(path = path)
+
+# df_cust_dem <- read_excel(path, sheet = "CustomerDemographic", skip = 1)
+# head(df_cust_dem)
+# 
+# df_new_cust <- read_excel(path, sheet = "NewCustomerList", skip = 1)
+# head(df_new_cust)
+
+```
+
+```{r}
+df_trans <- read_excel(path, sheet = "Transactions", skip = 1)
+head(df_trans)
+
+```
+
+```{r}
+# Change columns data types
+to_chr <- c("transaction_id", "product_id", "customer_id")
+df_trans[to_chr] <- sapply(df_trans[to_chr], as.character)
+
+```
+Things to check:
+- number of distinct values
+- number of non-numeric value in a numeric column
+- number of blank values
+- number of rows
+- data type
+- number of duplicate values
+- minimum value
+- maximum value
+
+- distinct values list
+
+- frequency distribution of categorical variables
+- histogram for numerical variables
+
+```{r}
+
+stats_cat <- function(col){
+    num_row <- nrow(col)
+    num_na <- sum(is.na(col))
+    num_dup <- sum(duplicated(col))
+    num_unique <- nrow(unique(col))
+    
+    Variable <- c("Number of Rows", "Number of NAs", "Number of Duplicates", "Number of Uniques")
+    Value <- c(num_row, num_na, num_dup, num_unique)
+    res <- data.frame(Variable, Value)
+    return(res)
+}
+
+
+stats_num <- function(col){
+    num_row <- nrow(col)
+    min <- min(col, na.rm = TRUE)
+    max <- max(col, na.rm=TRUE)
+    num_na <- sum(is.na(col))
+    num_dup <- sum(duplicated(col))
+    num_unique <- nrow(unique(col))
+    
+    Variable <- c("Number of Rows", "Min", "Max", "Number of NAs", "Number of Duplicates", "Number of Uniques")
+    Value <- c(num_row, min, max, num_na, num_dup, num_unique)
+    res <- data.frame(Variable, Value)
+    return(res)
+}
+
+stats_date <- function(col){
+    num_row <- nrow(col)
+    num_na <- sum(is.na(col))
+    num_dup <- sum(duplicated(col))
+    num_unique <- nrow(unique(col))
+    
+    Variable <- c("Number of Rows", "Number of NAs", "Number of Duplicates", "Number of Uniques")
+    Value <- c(num_row, num_na, num_dup, num_unique)
+    res <- data.frame(Variable, Value)
+    return(res)
+}
+
+
+# Minimum & maximum value
+min(df_trans["standard_cost"], na.rm =TRUE)
+max(df_trans["list_price"], na.rm =TRUE)
+
+# Minimun & maximun for date
+min <- min(df_trans$transaction_date, na.rm = TRUE)
+max <- max(df_trans$transaction_date, na.rm = TRUE)
+data.frame(min, max)
+
+# Number of rows
+nrow(df_trans["brand"])
+
+# Number of na values
+sum(is.na(df_trans["brand"]))
+
+# Number of duplicate values
+sum(duplicated(df_trans["customer_id"]))
+
+# Number of distinct values
+nrow(unique(df_trans["customer_id"]))
+
+# Data type, cannot find the expected result yet
+sapply(df_trans["list_price"], class)
+
+# Check if there is a non-numeric value in a numeric column
+vec <- pull(df_trans, list_price)
+sum((is.na(as.numeric(as.character(vec)))))
+
+# Distinct value list
+unique(df_trans["brand"])
+
+# Frequency table for categorical variable excluding null values
+as.data.frame(table(df_trans["online_order"]))
+
+# Frequency table for numerical variable excluding null values and with order
+table <- as.data.frame(table(df_nc["tenure"]))
+table <- table[order(table["Freq"]),]
+table
+
+# Frequency plot for categorical variable
+ggplot(df_trans["brand"], aes(x=brand)) + geom_bar()
+
+# Histogram for numerical variable
+ggplot(df_trans, aes(x=standard_cost)) + geom_histogram()
+
+```
