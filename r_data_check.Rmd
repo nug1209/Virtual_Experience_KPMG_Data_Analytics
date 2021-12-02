@@ -106,4 +106,101 @@ max <- max(df_trans$transaction_date, na.rm = TRUE)
 data.frame(min, max)
 
 ```
+```{r}
+ggplot(df_trans, aes(x=transaction_date)) + geom_histogram()
+```
+
+TRANSACTIONS sheet: online_order
+```{r}
+stats_cat(df_trans["online_order"])
+```
+```{r}
+unique(df_trans["online_order"])
+```
+```{r}
+ggplot(df_trans["online_order"], aes(x=online_order)) + geom_bar()
+```
+TRANSACTIONS sheet: order_status
+```{r}
+stats_cat(df_trans["order_status"])
+```
+
+```{r}
+ggplot(df_trans["order_status"], aes(x=order_status)) + geom_bar()
+```
+TRANSACTIONS sheet: brand
+```{r}
+stats_cat(df_trans["brand"])
+```
+```{r}
+unique(df_trans["brand"])
+```
+```{r}
+ggplot(df_trans["brand"], aes(x=brand)) + geom_bar()
+```
+TRANSACTIONS sheet: product_line
+```{r}
+stats_cat(df_trans["product_line"])
+```
+```{r}
+unique(df_trans["product_line"])
+```
+```{r}
+ggplot(df_trans["product_line"], aes(x=product_line)) + geom_bar()
+```
+TRANSACTIONS sheet: product_size
+
+```{r}
+stats_cat(df_trans["product_size"])
+```
+```{r}
+unique(df_trans["product_size"])
+```
+```{r}
+
+ggplot(df_trans["product_size"], aes(x=product_size)) + geom_bar()
+```
+TRANSACTIONS sheet: list_price
+```{r}
+stats_num(df_trans["list_price"])
+```
+```{r}
+ggplot(df_trans, aes(x=list_price)) + geom_histogram()
+
+```
+
+```{r}
+# Check to see if there is a character value in this numeric column
+vec <- pull(df_trans, list_price )
+sum(is.na(as.numeric(as.character(vec))))
+```
+TRANSACTIONS sheet: standard_cost
+
+```{r}
+stats_num(df_trans["standard_cost"])
+```
+```{r}
+ggplot(df_trans, aes(x=standard_cost)) + geom_histogram()
+
+```
+```{r}
+# Check to see if there is a character value in this numeric column
+vec <- pull(df_trans, standard_cost )
+sum(is.na(as.numeric(as.character(vec))))
+```
+TRANSACTIONS sheet: product_first_sold_date
+
+```{r}
+stats_num(df_trans["product_first_sold_date"])
+```
+```{r}
+# Check to see if there is a character value in this numeric column
+vec <- pull(df_trans, standard_cost )
+sum(is.na(as.numeric(as.character(vec))))
+```
+
+
+
+
+
 
