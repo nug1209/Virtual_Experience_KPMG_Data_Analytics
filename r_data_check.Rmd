@@ -13,6 +13,8 @@ library("readxl")
 library("dplyr")
 library("ggplot2")
 library("lubridate")
+library("janitor")
+library("tibble")
 
 # Set path
 path <- "KPMG_VI_New_raw_data_update_final.xlsx"
@@ -75,6 +77,8 @@ head(df_trans)
 # Change columns data types
 to_chr <- c("transaction_id", "product_id", "customer_id")
 df_trans[to_chr] <- sapply(df_trans[to_chr], as.character)
+
+df_trans["product_first_sold_date"] <- excel_numeric_to_date(df_trans$product_first_sold_date)
 
 ```
 TRANSACTIONS sheet: transaction_id
@@ -188,19 +192,26 @@ ggplot(df_trans, aes(x=standard_cost)) + geom_histogram()
 vec <- pull(df_trans, standard_cost )
 sum(is.na(as.numeric(as.character(vec))))
 ```
-TRANSACTIONS sheet: product_first_sold_date
 
-```{r}
-stats_num(df_trans["product_first_sold_date"])
-```
 ```{r}
 # Check to see if there is a character value in this numeric column
 vec <- pull(df_trans, standard_cost )
 sum(is.na(as.numeric(as.character(vec))))
 ```
 
+TRANSACTIONS sheet: product_first_sold_date
+```{r}
+stats_date(df_trans["product_first_sold_date"])
+```
 
-NEWCUSTOMERLIST
+
+```{r}
+min <- min(df_trans$product_first_sold_date, na.rm = TRUE)
+max <- max(df_trans$product_first_sold_date, na.rm = TRUE)
+data.frame(min, max)
+```
+
+NEWCUSTOMERLIST sheet
 
 ```{r}
 df_nc <- read_excel(path, sheet = "NewCustomerList", skip = 1)
@@ -434,5 +445,209 @@ CUSTOMERDEMOGRAPHIC sheet
 ```{r}
 df_cd <- read_excel(path, sheet = "CustomerDemographic", skip = 1)
 head(df_cd)
+```
+```{r}
+# Change columns data types
+to_num <- c("DOB")
+df_cd[to_num] <- sapply(df_cd[to_num], as.numeric)
+df_cd["DOB"] <- excel_numeric_to_date(df_cd$DOB)
+# Customer with ID 4 has DOB 1843. It is visible in Excel but appeared to be turned to NA in R.
+
+```
+CUSTOMERDEMOGRAPHIC sheet: check for duplicates in customer names
+```{r}
+df_cd$check_dup <- paste(df_cd$first_name, df_cd$last_name, df_cd$DOB)
+head(df_nc)
+```
+```{r}
+stats_cat(df_cd["check_dup"])
+```
+
+
+CUSTOMERDEMOGRAPHIC sheet: customer_id
+```{r}
+# Check if there is a non-numeric value in a numeric column
+vec <- pull(df_cd, customer_id)
+sum((is.na(as.numeric(as.character(vec)))))
+```
+```{r}
+stats_num(df_cd["customer_id"])
+```
+
+
+CUSTOMERDEMOGRAPHIC sheet: first_name
+```{r}
+stats_cat(df_cd["first_name"])
+```
+
+
+CUSTOMERDEMOGRAPHIC sheet: last_name
+```{r}
+stats_cat(df_cd["last_name"])
+```
+
+
+CUSTOMERDEMOGRAPHIC sheet: gender
+```{r}
+stats_cat(df_cd["gender"])
+```
+```{r}
+unique(df_cd["gender"])
+```
+```{r}
+as.data.frame(table(df_cd["gender"]))
+```
+
+
+CUSTOMERDEMOGRAPHIC sheet: past_3_years_bike_related_purchases
+```{r}
+stats_num(df_cd["past_3_years_bike_related_purchases"])
+```
+```{r}
+ggplot(df_cd, aes(x=past_3_years_bike_related_purchases)) + geom_histogram()
+```
+
+
+CUSTOMERDEMOGRAPHIC sheet: DOB
+```{r}
+stats_date(df_cd["DOB"])
+```
+```{r}
+min <- min(df_cd$DOB, na.rm = TRUE)
+max <- max(df_cd$DOB, na.rm = TRUE)
+data.frame(min, max)
+```
+```{r}
+ggplot(df_cd, aes(x=DOB)) + geom_histogram()
+```
+
+
+CUSTOMERDEMOGRAPHIC sheet: job_title
+```{r}
+stats_cat(df_cd["job_title"])
+```
+```{r}
+unique <- unique(df_cd["job_title"])
+unique <- unique[order(unique["job_title"]),]
+pull(unique, job_title)
+```
+```{r}
+table <- as.data.frame(table(df_nc["job_title"]))
+table <- table[order(-table["Freq"]),]
+table
+```
+
+
+CUSTOMERDEMOGRAPHIC sheet: job_industry_category
+```{r}
+stats_cat(df_cd["job_industry_category"])
+```
+```{r}
+unique <- unique(df_cd["job_industry_category"])
+unique <- unique[order(unique["job_industry_category"]),]
+pull(unique, job_industry_category)
+```
+```{r}
+table <- as.data.frame(table(df_nc["job_industry_category"]))
+table <- table[order(-table["Freq"]),]
+table
+```
+
+
+CUSTOMERDEMOGRAPHIC sheet: wealth_segment
+```{r}
+stats_cat(df_cd["wealth_segment"])
+```
+```{r}
+unique(df_cd["wealth_segment"])
+```
+```{r}
+ggplot(df_cd, aes(x=wealth_segment)) + geom_bar()
+```
+
+
+CUSTOMERDEMOGRAPHIC sheet:
+```{r}
+stats_cat(df_cd["deceased_indicator"])
+```
+```{r}
+as.data.frame(table(df_cd["deceased_indicator"]))
+```
+
+
+
+CUSTOMERDEMOGRAPHIC sheet: owns_car
+```{r}
+stats_cat(df_cd["owns_car"])
+```
+```{r}
+as.data.frame(table(df_cd["owns_car"]))
+```
+
+CUSTOMERDEMOGRAPHIC sheet: tenure
+
+```{r}
+stats_num(df_cd["tenure"])
+```
+```{r}
+ggplot(df_cd, aes(x=tenure)) + geom_histogram()
+```
+CUSTOMERADDRESS sheet
+```{r}
+df_ca <- read_excel(path, sheet = "CustomerAddress", skip = 1)
+head(df_ca)
+
+```
+```{r}
+# Change columns data types
+df_ca["postcode"] <- sapply(df_ca['postcode'], as.numeric)
+```
+
+CUSTOMERADDRESS sheet: customer_id
+```{r}
+vec <- pull(df_ca, customer_id)
+sum((is.na(as.numeric(as.character(vec)))))
+```
+```{r}
+stats_num(df_ca["customer_id"])
+```
+
+
+CUSTOMERADDRESS sheet:
+```{r}
+stats_cat(df_ca["address"])
+```
+
+
+CUSTOMERADDRESS sheet:
+```{r}
+stats_num(df_ca["postcode"])
+```
+
+
+CUSTOMERADDRESS sheet: state
+```{r}
+stats_cat(df_ca["state"])
+```
+```{r}
+unique(df_ca["state"])
+```
+```{r}
+ggplot(df_ca, aes(x=state)) + geom_bar()
+```
+
+
+CUSTOMERADDRESS sheet: country
+```{r}
+stats_cat(df_ca["country"])
+```
+
+
+CUSTOMERADDRESS sheet: property_valuation
+```{r}
+stats_num(df_ca["property_valuation"])
+```
+```{r}
+ggplot(df_ca["property_valuation"], aes(x=property_valuation)) + geom_histogram()
 ```
 
