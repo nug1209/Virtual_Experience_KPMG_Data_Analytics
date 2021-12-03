@@ -3,6 +3,9 @@ title: "KPMB Data Analytics Virtual Experience"
 output: html_notebook
 ---
 
+By: Nugroho Budianggoro
+02/12/2021
+Jakarta, Indonesia
 
 Checking parts of data that need cleaning.
 
@@ -435,11 +438,11 @@ NEWCUSTOMERLIST sheet: Value
 stats_num(df_nc["Value"])
 ```
 ```{r}
-vec <- pull(df_trans, list_price)
+vec <- pull(df_nc, Value)
 sum((is.na(as.numeric(as.character(vec)))))
 ```
 ```{r}
-ggplot(df_nc, aes(x=Rank)) + geom_histogram()
+ggplot(df_nc, aes(x=Value)) + geom_histogram()
 ```
 CUSTOMERDEMOGRAPHIC sheet
 ```{r}
